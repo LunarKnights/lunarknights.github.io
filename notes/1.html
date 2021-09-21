@@ -1,0 +1,179 @@
+<html>
+	<head>
+		<link
+			href="https://unpkg.com/prismjs@1.25.0/themes/prism.css"
+			rel="stylesheet"
+		/>
+		<script src="https://unpkg.com/mermaid@8.12.1/dist/mermaid.min.js"></script>
+		<script>
+			mermaid.initialize({ startOnLoad: true });
+			mermaid.parseError = console.log;
+		</script>
+		<link rel="stylesheet" type="text/css" href="../css/GitHub2.css" />
+		<link rel="stylesheet" href="https://latex.now.sh/style.css" />
+		<style type="text/css">
+			.lklink {
+				color: inherit;
+				text-decoration: inherit;
+			}
+			.lklink:visited {
+				color: inherit;
+			}
+			.lklink:hover {
+				color: #444;
+			}
+			body {
+				max-width: 100%;
+			}
+			.date {
+				float: right;
+				font-size: 75%;
+			}
+		</style>
+	</head>
+	<body>
+		<script src="https://unpkg.com/prismjs@v1.25.0/components/prism-core.min.js"></script>
+		<script src="https://unpkg.com/prismjs@v1.25.0/plugins/autoloader/prism-autoloader.min.js"></script>
+		<div style="text-align: center">
+			<h1>
+				<a class="lklink" href="../index.html">
+					Meeting Notes <br />
+					<span style="font-size: 50%"
+						>Lunar Knights Control Systems</span
+					>
+				</a>
+			</h1>
+		</div>
+<title>LK  [09/19/2021]</title>
+<div><h1><div>ROS Fundamentals <span class="date"> [09/19/2021]</span></div></h1></div>
+<h2>Agenda</h2>
+<ol>
+<li>Software recap</li>
+<li>Details</li>
+<li>ROS2 Primer</li>
+<li>Docker</li>
+<li>Obstacle avoidance and SLAM</li>
+</ol>
+<h2>Software recap</h2>
+<p>We are in charge of the remote and autonomus operation of the robot. In pursuit of this goal, we have two primary objectives.</p>
+<ol>
+<li>LK Library - all of the low level hardware control apis.</li>
+<li>LK Robot - high level robot controls and mission control communication.</li>
+</ol>
+<h2>Details</h2>
+<pre><code class="language-yaml">Lunar Knights: Software
+LK Library:
+	hardware: # robot independent code
+		- stepper.cpp
+		- talon.cpp
+		- zed.cpp
+	subsystems: # robot dependent code
+		- drivetrain.cpp
+		- intake.cpp
+	utils:
+		- logging.cpp
+	lkpy: # Python C Extensions
+		- module.cpp
+		- setup.py
+LK Robot:
+	- teleop.py # remote control handler
+	autos: # auto tasks
+		- mining.py
+		- navigation.py
+	dashboard: # non-ROS based backend server for robot info
+		- app.py
+		templates:
+			- index.html
+		static:
+			- index.js
+LK Client:
+	- client.py # encode gamepad inputs and send to robot
+</code></pre>
+<h2>ROS2 Primer</h2>
+<p>Documention: <a href="https://docs.ros.org/en/foxy/index.html">https://docs.ros.org/en/foxy/index.html</a></p>
+<p>ROS 2 can be thought of as a middleware based on an anonymous publish/subscribe mechanism. The ROS graph is the primary mechanism for which a network of nodes communicate.</p>
+<h3>Graph Concepts</h3>
+<ol>
+<li><em>Node</em> - an entity that uses ROS to communicate with other nodes.</li>
+<li><em>Message</em> - a ROS data type used when subscribing or publishing to a topic.</li>
+<li><em>Topic</em> - a housing for particular messages. Nodes can subscribe to a topic to receive messages or publish messages to a topic.</li>
+<li><em>Discovery</em> - the process through which nodes determine how to connect.</li>
+</ol>
+<p>Pub/sub nodes utilize a data stream to send and recieve messages. We can instead use a service/client nodes to request data. This acts like a traditional REST API where we send a request to a server and recieve a response.</p>
+<p>Nodes can contain both publishers and subscribers to help synchronize actions. For example, consider a node that publishs to the <code>/motor_power</code> topic. It may want to subscribe to the <code>/distance_sensor</code> topic so it knows when to cut motor power.</p>
+<h4>Simple pub/sub</h4>
+<div class="mermaid">graph LR;
+	A(Node A)--&gt;|publish|C{{/motor_power}};
+	C--&gt;|subscribe|B(Node B);
+</div>
+<h4>Simple service</h4>
+<div class="mermaid">graph TD;
+    A(Node A)--&gt;|request|B(Node B);
+    B--&gt;|response|A;
+</div>
+<h3>Gazebo Primer</h3>
+<p>Documentation: <a href="http://gazebosim.org/tutorials">http://gazebosim.org/tutorials</a></p>
+<p>Gazebo is robot simulation program that allows for rapid development without a physical robot. ROS2 integrates nicely with Gazebo allowing us to control a virtual robot with the same ROS2 code. You can also write custom Gazebo plugins to control the virtual robot.</p>
+<p><code>gazebo &lt;file.world&gt;</code> starts the gazebo server and client. You can model directly in Gazebo, or use a urdf converter to generate compatible files from CAD models.</p>
+<h2>Docker</h2>
+<h3>Install</h3>
+<p>If you have a Linux machine you do not <em>have</em> to use Docker. For everyone else, you can install ROS2 natively but for simplicity we will use Docker containers. This will help ensure the code you write on your machine will work on the robot. Installing Docker is also significantly easier than installing ROS2.</p>
+<p>Go to: <a href="https://docs.docker.com/get-docker/">https://docs.docker.com/get-docker/</a></p>
+<p>Here are two images with ROS2 you can use:</p>
+<pre><code class="language-bash">docker pull osrf/ros:foxy-desktop
+docker pull tiryoh/ros2-desktop-vnc:foxy
+</code></pre>
+<h3>Simple Example</h3>
+<p>First, start a ROS2 container with a demo publisher node.</p>
+<pre><code class="language-bash">docker run -it osrf/ros:foxy-desktop
+ros2 run demo_nodes_py talker
+</code></pre>
+<p>Then, start another ROS2 container with a demo subscriber node.</p>
+<pre><code class="language-bash">docker run -it osrf/ros:foxy-desktop
+ros2 run demo_nodes_py listener
+</code></pre>
+<p>The first terminal will have output similar to this:</p>
+<pre><code class="language-bash">[INFO] [1632017772.938123800] [talker]: Publishing: &quot;Hello World: 0&quot;
+</code></pre>
+<p>The second terminal will have output similar to this:</p>
+<pre><code class="language-bash">[INFO] [1632017775.940565000] [listener]: I heard: [Hello World: 3]
+</code></pre>
+<h3>Shared Volumes</h3>
+<p>In order to &quot;save&quot; our work outside of a container, we will use a shared volume.</p>
+<pre><code class="language-bash">mkdir /docker_volume
+docker run -it -v /docker_volume:/shared osrf/ros:foxy-desktop
+</code></pre>
+<p>Now anything we put in <code>/docker_volume </code> will be shared across the container and our host machine. All relevant code should be put in this folder for safe keeping. This will also allow you to use your IDE of choice while developing. Be careful with this as your container is no longer 100% isolated from your host machine.</p>
+<h3>Virtual Network Computing (VNC)</h3>
+<p>VNC is a graphical desktop-sharing system that allows us to get a GUI for our Docker containers.</p>
+<pre><code class="language-bash">docker run -p 6080:80 -p 5900:5900 --shm-size=512m -e VNC_PASSWORD=123 tiryoh/ros2-desktop-vnc:foxy
+</code></pre>
+<p>You can use a VNC viewer and go to: <code>vnc://127.0.0.1:5900</code> or use a browser and go to: <code>localhost:6080</code>. The password is 123. You will see a Desktop enviroment to use for any GUI applications. This will be particularly useful for running Gazebo.</p>
+<h3>Gazebo Example</h3>
+<pre><code class="language-bash">docker run -p 6080:80 -p 5900:5900 --shm-size=512m -e VNC_PASSWORD=123 -v \
+/Users/sachin/docker_tests/shared:/shared tiryoh/ros2-desktop-vnc:foxy
+</code></pre>
+<p>First terminal (in the GUI):</p>
+<pre><code class="language-bash">cd /shared/model1 &amp;&amp; gazebo world.world
+</code></pre>
+<p>Second terminal:</p>
+<pre><code class="language-bash">ros2 topic pub /demo/cmd_demo geometry_msgs/Twist '{linear: {x: 1.0}}' -1
+</code></pre>
+<p>Third terminal:</p>
+<pre><code class="language-bash">ros2 topic echo /demo/odom_demo
+</code></pre>
+<h2>Obstacle Avoidance and SLAM</h2>
+<p>We need to ensure our robot does not run into obstacles. We could do this task via remote control; however, there is latency for every input. In addition, we get more points for more autonomy.</p>
+<p><em>What do we need to avoid?</em> Craters, boulders and walls.</p>
+<p>When avoiding obstacles we need to maintain an overall heading. For example, if we turn left, we need to eventually turn right to end up in the right place.</p>
+<p>This problem can be divided into two parts: detection and avoidance.</p>
+<h3>Detection</h3>
+<ol>
+<li>LIDAR (Light Detection and Ranging) - Uses time of flight of laser pulses to determine the distance of a particular point. This method is very accurate but is expensive. Additional care is also needed to obtain more than a single distance measurement. Most LIDAR units use a rotate disk to gain a 360 view across a single plane.</li>
+<li>Structured light - Uses a projection of fixed patterns to code the distance of every pixel in an image. This method quickly obtains depth data but is sensitive to lighting variations and can interfere with other units.</li>
+<li>Stereo cameras - Uses a dual camera approach similar to human eyes to approximate depth. This method can have lots of noise and doesn't perform well in low-complexity enviroments (such as a plain colored wall). Some cameras will add a IR pattern projector to add additional feature points for enhanced accuracy (iPhones use this approach).</li>
+</ol>
+<p>Once we have a 2D map of depths in front of the robot, we must understand what is actually an obstacle. If we know what is normal, we can compare the observed with the expected to see what is in the way.</p>
+<h3>Avoidance</h3>
+<p>Simultaneous localization and mapping (SLAM) is helpful for avoiding obstacles. Whenever we detect an obstacle we can mark its location relative to the robot. Then as the robot moves about, we use that obstacle as a reference point for localizing our location. This gives us a map of our enviroment that we can use to navigate through with standard motion planning algorithms.</p>
+</body></html>
