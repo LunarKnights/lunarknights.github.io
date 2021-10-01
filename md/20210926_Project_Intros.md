@@ -79,7 +79,20 @@ subscription = node.create_subscription(
 
 Goal: Access robot information and control basic motions.
 
-[Coming Soon]
+Controlling the robot with ROS is neat, but can be difficult to work with. We would like a visual dashboard to quickly see critical robot information. The goal is we can utilize this dashboard on any non-ROS device (such as a phone). The dashboard should have basic robot controls (shutdown, start task, etc) and access to all robot data (imu, current, etc). This project involves two parts: the front-end dashboard for browser viewing and the back-end server running on the robot.
+
+### Inspiration
+
+| Current Plots                     | Gamepad Display                   |
+| --------------------------------- | --------------------------------- |
+| ![current](../assets/current.png) | ![gamepad](../assets/gamepad.png) |
+
+### Resources
+
+-   Python Flask: [https://flask.palletsprojects.com/en/2.0.x/](https://flask.palletsprojects.com/en/2.0.x/)
+-   Flask Sockets: [https://flask-socketio.readthedocs.io/en/latest/getting_started.html](https://flask-socketio.readthedocs.io/en/latest/getting_started.html)
+-   JavaScript Sockets: [https://socket.io/docs/v4/](https://socket.io/docs/v4/)
+-   ReactJs: [https://reactjs.org/](https://reactjs.org/)
 
 ## Hardware Research
 

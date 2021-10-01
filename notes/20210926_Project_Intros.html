@@ -13,7 +13,7 @@
 		</script>
 <title>Project Intros</title>
 </head>
-<body class="line-numbers">
+<body>
 <script src="https://unpkg.com/prismjs@v1.25.0/components/prism-core.min.js"></script>
 <script src="https://unpkg.com/prismjs@v1.25.0/plugins/autoloader/prism-autoloader.min.js"></script>
 <script src="https://unpkg.com/prismjs@1.25.0/plugins/line-numbers/prism-line-numbers.min.js"></script>
@@ -96,7 +96,29 @@ subscription = node.create_subscription(
 </ul>
 <h2 id="web-dashboard">Web Dashboard <a class="header-anchor" href="#web-dashboard">#</a></h2>
 <p>Goal: Access robot information and control basic motions.</p>
-<p>[Coming Soon]</p>
+<p>Controlling the robot with ROS is neat, but can be difficult to work with. We would like a visual dashboard to quickly see critical robot information. The goal is we can utilize this dashboard on any non-ROS device (such as a phone). The dashboard should have basic robot controls (shutdown, start task, etc) and access to all robot data (imu, current, etc). This project involves two parts: the front-end dashboard for browser viewing and the back-end server running on the robot.</p>
+<h3 id="inspiration">Inspiration <a class="header-anchor" href="#inspiration">#</a></h3>
+<table>
+<thead>
+<tr>
+<th>Current Plots</th>
+<th>Gamepad Display</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><img alt="current" src="../assets/current.png"/></td>
+<td><img alt="gamepad" src="../assets/gamepad.png"/></td>
+</tr>
+</tbody>
+</table>
+<h3 id="resources-1">Resources <a class="header-anchor" href="#resources-1">#</a></h3>
+<ul>
+<li>Python Flask: <a href="https://flask.palletsprojects.com/en/2.0.x/">https://flask.palletsprojects.com/en/2.0.x/</a></li>
+<li>Flask Sockets: <a href="https://flask-socketio.readthedocs.io/en/latest/getting_started.html">https://flask-socketio.readthedocs.io/en/latest/getting_started.html</a></li>
+<li>JavaScript Sockets: <a href="https://socket.io/docs/v4/">https://socket.io/docs/v4/</a></li>
+<li>ReactJs: <a href="https://reactjs.org/">https://reactjs.org/</a></li>
+</ul>
 <h2 id="hardware-research">Hardware Research <a class="header-anchor" href="#hardware-research">#</a></h2>
 <p>Goal: Determine what sensors we should invest in. Cost analysis, how do we control them, basic specs, etc.</p>
 <p>[Coming Soon]</p>
