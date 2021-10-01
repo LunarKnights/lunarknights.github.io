@@ -1,5 +1,3 @@
-# ROS Fundamentals | [09/19/2021]
-
 ## Agenda
 
 1. Software recap
@@ -17,7 +15,7 @@ We are in charge of the remote and autonomus operation of the robot. In pursuit 
 
 ## Details
 
-```yaml
+```yaml #
 Lunar Knights: Software
 
 LK Library:

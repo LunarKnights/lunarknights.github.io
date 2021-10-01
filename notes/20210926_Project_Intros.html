@@ -1,0 +1,104 @@
+<html>
+<head>
+<link href="../css/GitHub2.css" rel="stylesheet" type="text/css"/>
+<link href="https://latex.now.sh/style.css" rel="stylesheet" type="text/css"/>
+<link href="../css/lunarknights.css" rel="stylesheet" type="text/css"/>
+<link href="https://unpkg.com/prismjs@1.25.0/themes/prism.css" rel="stylesheet"/>
+<link href="https://unpkg.com/prismjs@1.25.0/plugins/line-numbers/prism-line-numbers.css" rel="stylesheet" type="text/css"/>
+<link href="https://unpkg.com/prismjs@1.25.0/plugins/toolbar/prism-toolbar.css" rel="stylesheet" type="text/css"/>
+<script src="https://unpkg.com/mermaid@8.12.1/dist/mermaid.min.js"></script>
+<script>
+			mermaid.initialize({ startOnLoad: true });
+			mermaid.parseError = console.log;
+		</script>
+<title>Project Intros</title>
+</head>
+<body class="line-numbers">
+<script src="https://unpkg.com/prismjs@v1.25.0/components/prism-core.min.js"></script>
+<script src="https://unpkg.com/prismjs@v1.25.0/plugins/autoloader/prism-autoloader.min.js"></script>
+<script src="https://unpkg.com/prismjs@1.25.0/plugins/line-numbers/prism-line-numbers.min.js"></script>
+<script src="https://unpkg.com/prismjs@1.25.0/plugins/toolbar/prism-toolbar.min.js"></script>
+<script src="https://unpkg.com/prismjs@1.25.0/plugins/copy-to-clipboard/prism-copy-to-clipboard.min.js"></script>
+<div style="text-align: center">
+<h1>
+<a class="lklink unstyled" href="../index.html">
+					Meeting Notes <br/>
+<span style="font-size: 50%">Lunar Knights Control Systems</span>
+</a>
+</h1>
+</div>
+<h1 style="text-align: left">
+<span id="page-title">Project Intros</span>
+<span class="lkdate" id="page-date">09/26/2021</span>
+</h1>
+<h2 id="agenda">Agenda <a class="header-anchor" href="#agenda">#</a></h2>
+<ol>
+<li>Recap</li>
+<li>Project Plan</li>
+<li>Gazebo Simulation</li>
+<li>Web Dashboard</li>
+<li>Sensor Research</li>
+</ol>
+<h2 id="recap">Recap <a class="header-anchor" href="#recap">#</a></h2>
+<p>We will use ROS2 to control our robot with publishers and subscribers. To get started with development, use a ROS2 Docker container where you can use the core ros packages and gazebo.</p>
+<h2 id="project-plan">Project Plan <a class="header-anchor" href="#project-plan">#</a></h2>
+<p>For the month of October we will work on a few specific projects that require minimal physical robot access. Right now we will pitch 3 potential projects.</p>
+<ol>
+<li>Gazebo Simluation</li>
+<li>Web Dashboard</li>
+<li>Electrical Hardware Abstraction Layer</li>
+</ol>
+<h2 id="gazebo-simulation">Gazebo Simulation <a class="header-anchor" href="#gazebo-simulation">#</a></h2>
+<p>Goal: Create a ROS-enabled virtual robot in Gazebo.</p>
+<p>Using a virtual robot to develop with will increase our ability to work quickly and asynchronously. We will work with the mechanical team to convert our robot CAD into the Unified Robot Description Format (<a href="http://wiki.ros.org/urdf/Tutorials">URDF</a>). Then, we will set up and develop relevant ROS plugins to control the virtual robot with ROS nodes.</p>
+<h3 id="code-snippets">Code Snippets <a class="header-anchor" href="#code-snippets">#</a></h3>
+<h4>Sample Gazebo world outline file</h4>
+<pre><code class="line-numbers language-xml">&lt;?xml version="1.0"?&gt;
+&lt;sdf version="1.6"&gt;
+	&lt;world name="default"&gt;
+		&lt;model name='robot'&gt;
+			&lt;link name='body'&gt; &lt;!-- simulation info --&gt; &lt;/link&gt;
+			&lt;link name='wheel'&gt; &lt;!-- simulation info --&gt; &lt;/link&gt;
+
+			&lt;joint name='motor' type='revolute'&gt;
+				&lt;parent&gt;body&lt;/parent&gt;
+				&lt;child&gt;wheel&lt;/child&gt;
+				&lt;!-- simulation info --&gt;
+			&lt;/joint&gt;
+
+		&lt;plugin name='skid_steer_drive' filename='libgazebo_ros_diff_drive.so'&gt;
+			&lt;!--parameters --&gt;
+		&lt;/plugin&gt;
+
+		&lt;/model&gt;
+	&lt;/world&gt;
+&lt;/sdf&gt;
+</code></pre>
+<h4>Simple ROS Publisher and Subscriber</h4>
+<p>Examples with Python and C++ API: <a href="https://github.com/ros2/examples">https://github.com/ros2/examples</a>.</p>
+<pre><code class="line-numbers language-python"># pub
+node = rclpy.create_node('minimal_publisher')
+publisher = node.create_publisher(String, 'topic', 10)
+
+publisher.publish(String('Hello!'))
+
+# sub
+node = rclpy.create_node('minimal_subscriber')
+subscription = node.create_subscription(
+	String, 'topic', lambda msg: node.get_logger().info('I heard: "%s"' % msg.data), 10)
+</code></pre>
+<h3 id="resources">Resources <a class="header-anchor" href="#resources">#</a></h3>
+<ul>
+<li>URDF: <a href="http://wiki.ros.org/urdf/Tutorials">http://wiki.ros.org/urdf/Tutorials</a></li>
+<li>Solidworks to URDF: <a href="http://wiki.ros.org/sw_urdf_exporter">http://wiki.ros.org/sw_urdf_exporter</a></li>
+<li>ROS &amp; Gazebo: <a href="http://gazebosim.org/tutorials?cat=connect_ros">http://gazebosim.org/tutorials?cat=connect_ros</a></li>
+<li>Plugins: <a href="https://github.com/ros-simulation/gazebo_ros_pkgs">https://github.com/ros-simulation/gazebo_ros_pkgs</a></li>
+</ul>
+<h2 id="web-dashboard">Web Dashboard <a class="header-anchor" href="#web-dashboard">#</a></h2>
+<p>Goal: Access robot information and control basic motions.</p>
+<p>[Coming Soon]</p>
+<h2 id="hardware-research">Hardware Research <a class="header-anchor" href="#hardware-research">#</a></h2>
+<p>Goal: Determine what sensors we should invest in. Cost analysis, how do we control them, basic specs, etc.</p>
+<p>[Coming Soon]</p>
+</body>
+</html>

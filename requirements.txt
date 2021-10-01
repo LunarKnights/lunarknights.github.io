@@ -1,0 +1,7 @@
+attrs==21.2.0
+beautifulsoup4==4.10.0
+markdown-it-py==1.1.0
+mdit-py-plugins==0.2.8
+soupsieve==2.2.1
+typing-extensions==3.10.0.2
+uc-micro-py==1.0.1

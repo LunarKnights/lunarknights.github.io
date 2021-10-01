@@ -1,5 +1,3 @@
-# Welcome to Lunar Knights | [09/12/2021]
-
 ## Agenda
 
 1. Introductions
