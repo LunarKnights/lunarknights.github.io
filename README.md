@@ -10,7 +10,7 @@ Create & edit markdown files in the `md` directory. The name of your file should
 
 Create a python virtual environment: `python3 -m venv .venv`
 
-Install the requirements: `pip install -r requirements.txt` or individual pacakges in your virtual environment:
+Install the requirements: `pip install -r requirements.txt` or individual packages in your virtual environment:
 
 -   `markdown-it-py`
 -   `mdit_py_plugins`
@@ -19,3 +19,8 @@ Install the requirements: `pip install -r requirements.txt` or individual pacakg
 ### Building
 
 Activate your virtual environment and run `python compile.py`
+
+For single file updating use `python compile.py <filename>` or with watch mode `python watch.py <filename>`
+
+Launch a server locally in the root directory to see changes. For example: `php -S localhost:8080`
+

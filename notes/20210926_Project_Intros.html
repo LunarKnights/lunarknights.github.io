@@ -31,7 +31,7 @@
 <span id="page-title">Project Intros</span>
 <span class="lkdate" id="page-date">09/26/2021</span>
 </h1>
-<h2 id="agenda">Agenda <a class="header-anchor" href="#agenda">#</a></h2>
+<h2 id="agenda-21">Agenda <a class="header-anchor" href="#agenda-21">#</a></h2>
 <ol>
 <li>Recap</li>
 <li>Project Plan</li>
@@ -39,19 +39,19 @@
 <li>Web Dashboard</li>
 <li>Sensor Research</li>
 </ol>
-<h2 id="recap">Recap <a class="header-anchor" href="#recap">#</a></h2>
+<h2 id="recap-21">Recap <a class="header-anchor" href="#recap-21">#</a></h2>
 <p>We will use ROS2 to control our robot with publishers and subscribers. To get started with development, use a ROS2 Docker container where you can use the core ros packages and gazebo.</p>
-<h2 id="project-plan">Project Plan <a class="header-anchor" href="#project-plan">#</a></h2>
+<h2 id="project-plan-21">Project Plan <a class="header-anchor" href="#project-plan-21">#</a></h2>
 <p>For the month of October we will work on a few specific projects that require minimal physical robot access. Right now we will pitch 3 potential projects.</p>
 <ol>
 <li>Gazebo Simluation</li>
 <li>Web Dashboard</li>
 <li>Electrical Hardware Abstraction Layer</li>
 </ol>
-<h2 id="gazebo-simulation">Gazebo Simulation <a class="header-anchor" href="#gazebo-simulation">#</a></h2>
+<h2 id="gazebo-simulation-21">Gazebo Simulation <a class="header-anchor" href="#gazebo-simulation-21">#</a></h2>
 <p>Goal: Create a ROS-enabled virtual robot in Gazebo.</p>
 <p>Using a virtual robot to develop with will increase our ability to work quickly and asynchronously. We will work with the mechanical team to convert our robot CAD into the Unified Robot Description Format (<a href="http://wiki.ros.org/urdf/Tutorials">URDF</a>). Then, we will set up and develop relevant ROS plugins to control the virtual robot with ROS nodes.</p>
-<h3 id="code-snippets">Code Snippets <a class="header-anchor" href="#code-snippets">#</a></h3>
+<h3 id="code-snippets-21">Code Snippets <a class="header-anchor" href="#code-snippets-21">#</a></h3>
 <h4>Sample Gazebo world outline file</h4>
 <pre><code class="line-numbers language-xml">&lt;?xml version="1.0"?&gt;
 &lt;sdf version="1.6"&gt;
@@ -87,17 +87,35 @@ node = rclpy.create_node('minimal_subscriber')
 subscription = node.create_subscription(
 	String, 'topic', lambda msg: node.get_logger().info('I heard: "%s"' % msg.data), 10)
 </code></pre>
-<h3 id="resources">Resources <a class="header-anchor" href="#resources">#</a></h3>
+<h3 id="resources-42">Resources <a class="header-anchor" href="#resources-42">#</a></h3>
 <ul>
 <li>URDF: <a href="http://wiki.ros.org/urdf/Tutorials">http://wiki.ros.org/urdf/Tutorials</a></li>
 <li>Solidworks to URDF: <a href="http://wiki.ros.org/sw_urdf_exporter">http://wiki.ros.org/sw_urdf_exporter</a></li>
 <li>ROS &amp; Gazebo: <a href="http://gazebosim.org/tutorials?cat=connect_ros">http://gazebosim.org/tutorials?cat=connect_ros</a></li>
 <li>Plugins: <a href="https://github.com/ros-simulation/gazebo_ros_pkgs">https://github.com/ros-simulation/gazebo_ros_pkgs</a></li>
 </ul>
-<h2 id="web-dashboard">Web Dashboard <a class="header-anchor" href="#web-dashboard">#</a></h2>
+<h2 id="web-dashboard-21">Web Dashboard <a class="header-anchor" href="#web-dashboard-21">#</a></h2>
 <p>Goal: Access robot information and control basic motions.</p>
 <p>Controlling the robot with ROS is neat, but can be difficult to work with. We would like a visual dashboard to quickly see critical robot information. The goal is we can utilize this dashboard on any non-ROS device (such as a phone). The dashboard should have basic robot controls (shutdown, start task, etc) and access to all robot data (imu, current, etc). This project involves two parts: the front-end dashboard for browser viewing and the back-end server running on the robot.</p>
-<h3 id="inspiration">Inspiration <a class="header-anchor" href="#inspiration">#</a></h3>
+<h3 id="basic-comms-21">Basic Comms <a class="header-anchor" href="#basic-comms-21">#</a></h3>
+<div class="mermaid">sequenceDiagram
+	participant C as Client
+	participant R as Server 
+	participant T as ROS Topics
+
+	C -&gt;&gt;+ R: Handshake
+	R -&gt;&gt; C: Handshake
+
+	par data
+		T --&gt;&gt; R: subscribe
+		R --&gt;&gt; C: emit
+	and controls
+		C --&gt;&gt; R: request
+		R --&gt;&gt; T: publish
+	end			
+	
+	R -&gt;&gt;- C: Close
+</div><h3 id="inspiration-21">Inspiration <a class="header-anchor" href="#inspiration-21">#</a></h3>
 <table>
 <thead>
 <tr>
@@ -112,14 +130,14 @@ subscription = node.create_subscription(
 </tr>
 </tbody>
 </table>
-<h3 id="resources-1">Resources <a class="header-anchor" href="#resources-1">#</a></h3>
+<h3 id="resources-43">Resources <a class="header-anchor" href="#resources-43">#</a></h3>
 <ul>
 <li>Python Flask: <a href="https://flask.palletsprojects.com/en/2.0.x/">https://flask.palletsprojects.com/en/2.0.x/</a></li>
 <li>Flask Sockets: <a href="https://flask-socketio.readthedocs.io/en/latest/getting_started.html">https://flask-socketio.readthedocs.io/en/latest/getting_started.html</a></li>
 <li>JavaScript Sockets: <a href="https://socket.io/docs/v4/">https://socket.io/docs/v4/</a></li>
 <li>ReactJs: <a href="https://reactjs.org/">https://reactjs.org/</a></li>
 </ul>
-<h2 id="hardware-research">Hardware Research <a class="header-anchor" href="#hardware-research">#</a></h2>
+<h2 id="hardware-research-21">Hardware Research <a class="header-anchor" href="#hardware-research-21">#</a></h2>
 <p>Goal: Determine what sensors we should invest in. Cost analysis, how do we control them, basic specs, etc.</p>
 <p>[Coming Soon]</p>
 </body>

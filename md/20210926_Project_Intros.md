@@ -81,6 +81,28 @@ Goal: Access robot information and control basic motions.
 
 Controlling the robot with ROS is neat, but can be difficult to work with. We would like a visual dashboard to quickly see critical robot information. The goal is we can utilize this dashboard on any non-ROS device (such as a phone). The dashboard should have basic robot controls (shutdown, start task, etc) and access to all robot data (imu, current, etc). This project involves two parts: the front-end dashboard for browser viewing and the back-end server running on the robot.
 
+### Basic Comms
+
+```mermaid
+sequenceDiagram
+	participant C as Client
+	participant R as Server 
+	participant T as ROS Topics
+
+	C ->>+ R: Handshake
+	R ->> C: Handshake
+
+	par data
+		T -->> R: subscribe
+		R -->> C: emit
+	and controls
+		C -->> R: request
+		R -->> T: publish
+	end			
+	
+	R ->>- C: Close
+```
+
 ### Inspiration
 
 | Current Plots                     | Gamepad Display                   |
