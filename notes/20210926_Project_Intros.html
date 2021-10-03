@@ -31,27 +31,27 @@
 <span id="page-title">Project Intros</span>
 <span class="lkdate" id="page-date">09/26/2021</span>
 </h1>
-<h2 id="agenda-21">Agenda <a class="header-anchor" href="#agenda-21">#</a></h2>
+<h2 id="agenda">Agenda <a class="header-anchor" href="#agenda">#</a></h2>
 <ol>
 <li>Recap</li>
 <li>Project Plan</li>
 <li>Gazebo Simulation</li>
 <li>Web Dashboard</li>
-<li>Sensor Research</li>
+<li>Hardware Research/Tinkering/Abstraction Layer</li>
 </ol>
-<h2 id="recap-21">Recap <a class="header-anchor" href="#recap-21">#</a></h2>
+<h2 id="recap">Recap <a class="header-anchor" href="#recap">#</a></h2>
 <p>We will use ROS2 to control our robot with publishers and subscribers. To get started with development, use a ROS2 Docker container where you can use the core ros packages and gazebo.</p>
-<h2 id="project-plan-21">Project Plan <a class="header-anchor" href="#project-plan-21">#</a></h2>
+<h2 id="project-plan">Project Plan <a class="header-anchor" href="#project-plan">#</a></h2>
 <p>For the month of October we will work on a few specific projects that require minimal physical robot access. Right now we will pitch 3 potential projects.</p>
 <ol>
-<li>Gazebo Simluation</li>
+<li>Gazebo Simulation</li>
 <li>Web Dashboard</li>
 <li>Electrical Hardware Abstraction Layer</li>
 </ol>
-<h2 id="gazebo-simulation-21">Gazebo Simulation <a class="header-anchor" href="#gazebo-simulation-21">#</a></h2>
+<h2 id="gazebo-simulation">Gazebo Simulation <a class="header-anchor" href="#gazebo-simulation">#</a></h2>
 <p>Goal: Create a ROS-enabled virtual robot in Gazebo.</p>
 <p>Using a virtual robot to develop with will increase our ability to work quickly and asynchronously. We will work with the mechanical team to convert our robot CAD into the Unified Robot Description Format (<a href="http://wiki.ros.org/urdf/Tutorials">URDF</a>). Then, we will set up and develop relevant ROS plugins to control the virtual robot with ROS nodes.</p>
-<h3 id="code-snippets-21">Code Snippets <a class="header-anchor" href="#code-snippets-21">#</a></h3>
+<h3 id="code-snippets">Code Snippets <a class="header-anchor" href="#code-snippets">#</a></h3>
 <h4>Sample Gazebo world outline file</h4>
 <pre><code class="line-numbers language-xml">&lt;?xml version="1.0"?&gt;
 &lt;sdf version="1.6"&gt;
@@ -87,17 +87,17 @@ node = rclpy.create_node('minimal_subscriber')
 subscription = node.create_subscription(
 	String, 'topic', lambda msg: node.get_logger().info('I heard: "%s"' % msg.data), 10)
 </code></pre>
-<h3 id="resources-42">Resources <a class="header-anchor" href="#resources-42">#</a></h3>
+<h3 id="resources">Resources <a class="header-anchor" href="#resources">#</a></h3>
 <ul>
 <li>URDF: <a href="http://wiki.ros.org/urdf/Tutorials">http://wiki.ros.org/urdf/Tutorials</a></li>
 <li>Solidworks to URDF: <a href="http://wiki.ros.org/sw_urdf_exporter">http://wiki.ros.org/sw_urdf_exporter</a></li>
 <li>ROS &amp; Gazebo: <a href="http://gazebosim.org/tutorials?cat=connect_ros">http://gazebosim.org/tutorials?cat=connect_ros</a></li>
 <li>Plugins: <a href="https://github.com/ros-simulation/gazebo_ros_pkgs">https://github.com/ros-simulation/gazebo_ros_pkgs</a></li>
 </ul>
-<h2 id="web-dashboard-21">Web Dashboard <a class="header-anchor" href="#web-dashboard-21">#</a></h2>
+<h2 id="web-dashboard">Web Dashboard <a class="header-anchor" href="#web-dashboard">#</a></h2>
 <p>Goal: Access robot information and control basic motions.</p>
 <p>Controlling the robot with ROS is neat, but can be difficult to work with. We would like a visual dashboard to quickly see critical robot information. The goal is we can utilize this dashboard on any non-ROS device (such as a phone). The dashboard should have basic robot controls (shutdown, start task, etc) and access to all robot data (imu, current, etc). This project involves two parts: the front-end dashboard for browser viewing and the back-end server running on the robot.</p>
-<h3 id="basic-comms-21">Basic Comms <a class="header-anchor" href="#basic-comms-21">#</a></h3>
+<h3 id="basic-comms">Basic Comms <a class="header-anchor" href="#basic-comms">#</a></h3>
 <div class="mermaid">sequenceDiagram
 	participant C as Client
 	participant R as Server 
@@ -115,7 +115,7 @@ subscription = node.create_subscription(
 	end			
 	
 	R -&gt;&gt;- C: Close
-</div><h3 id="inspiration-21">Inspiration <a class="header-anchor" href="#inspiration-21">#</a></h3>
+</div><h3 id="inspiration">Inspiration <a class="header-anchor" href="#inspiration">#</a></h3>
 <table>
 <thead>
 <tr>
@@ -130,15 +130,28 @@ subscription = node.create_subscription(
 </tr>
 </tbody>
 </table>
-<h3 id="resources-43">Resources <a class="header-anchor" href="#resources-43">#</a></h3>
+<h3 id="resources-1">Resources <a class="header-anchor" href="#resources-1">#</a></h3>
 <ul>
 <li>Python Flask: <a href="https://flask.palletsprojects.com/en/2.0.x/">https://flask.palletsprojects.com/en/2.0.x/</a></li>
 <li>Flask Sockets: <a href="https://flask-socketio.readthedocs.io/en/latest/getting_started.html">https://flask-socketio.readthedocs.io/en/latest/getting_started.html</a></li>
 <li>JavaScript Sockets: <a href="https://socket.io/docs/v4/">https://socket.io/docs/v4/</a></li>
 <li>ReactJs: <a href="https://reactjs.org/">https://reactjs.org/</a></li>
 </ul>
-<h2 id="hardware-research-21">Hardware Research <a class="header-anchor" href="#hardware-research-21">#</a></h2>
-<p>Goal: Determine what sensors we should invest in. Cost analysis, how do we control them, basic specs, etc.</p>
-<p>[Coming Soon]</p>
+<h2 id="hardware-research-and-abstraction-layer">Hardware Research and Abstraction Layer <a class="header-anchor" href="#hardware-research-and-abstraction-layer">#</a></h2>
+<p>Goal: Determine the best and simplest way to get the robot working. Topics that may come up include motor drivers, the communication network, and sensors.</p>
+<h3 id="focus-for-this-competition-season">Focus for This Competition Season <a class="header-anchor" href="#focus-for-this-competition-season">#</a></h3>
+<h4>Motors and control network:</h4>
+<p>This is our primary goal. See the Getting the robot moving section for more info.</p>
+<h4>Motor Drivers and Control for Stepper and Servo Motors</h4>
+<p>We may need to create/adapt some motor drivers to use with stepper and servo motors if mechanical needs them. This may involve soldering them to <a href="https://duckduckgo.com/?q=proto+perf+board&amp;t=ffab&amp;iar=images&amp;iax=images&amp;ia=images">proto boards</a>.</p>
+<h4>Sensor Selection</h4>
+<p>We will likely want some sensors (such as load cells) on our robot, after we finish the basic control of the robot, we will decide what sensors make the most sense.</p>
+<h3 id="getting-the-robot-moving">Getting the Robot Moving <a class="header-anchor" href="#getting-the-robot-moving">#</a></h3>
+<p>Our primary goal is to get the robot's wheels to turn. Using our current hardware, this involves making sure the CAN bus works, learning what controls we can send/receive from the Talon SRX motor controllers (using the talon SDK, since they are not officially supported on Linux), and implementing what we learn into ROS.</p>
+<p>The last time we attempted to get the robot moving we struggled to get the talons to communicate with our pi, so our first goal is to recreate the control system we had previously.</p>
+<h3 id="current-hardware-setup-and-potential-future-hardware">Current Hardware Setup and Potential Future Hardware <a class="header-anchor" href="#current-hardware-setup-and-potential-future-hardware">#</a></h3>
+<p>Currently, The robot consists of a Raspberry Pi 3B+, CANable USB-to-CAN adapter, and some FRC equipment (Talon SRX Bag motor[FRC BDC motors] controllers, Power Distribution Panel). We are using a c/c++ SDK to communicate with the talons over the CANable and controlling the robot using the dashboard and an xbox controller.</p>
+<p>If we have difficulty with the talons, we may have to find some other smart motor controller, or create our own. However, this may take much more effort and create the possibility of not being able to finish the robot.</p>
+<p>In the future, assuming we both have a working robot + control system and are have plenty of extra time, we will probably be looking into replacing the talons with a more closed-loop control design. This would give us the benefit of having precise control over the entire robot at the cost of man hours.</p>
 </body>
 </html>

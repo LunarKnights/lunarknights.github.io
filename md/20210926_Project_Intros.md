@@ -14,7 +14,7 @@ We will use ROS2 to control our robot with publishers and subscribers. To get st
 
 For the month of October we will work on a few specific projects that require minimal physical robot access. Right now we will pitch 3 potential projects.
 
-1. Gazebo Simluation
+1. Gazebo Simulation
 2. Web Dashboard
 3. Electrical Hardware Abstraction Layer
 
@@ -120,7 +120,7 @@ sequenceDiagram
 
 Goal: Determine the best and simplest way to get the robot working. Topics that may come up include motor drivers, the communication network, and sensors.
 
-### Focus for This Competion Season
+### Focus for This Competition Season
 
 #### Motors and control network:
 This is our primary goal. See the Getting the robot moving section for more info.
@@ -131,19 +131,19 @@ We may need to create/adapt some motor drivers to use with stepper and servo mot
 #### Sensor Selection
 We will likely want some sensors (such as load cells) on our robot, after we finish the basic control of the robot, we will decide what sensors make the most sense.
 
-### Geting the Robot Moving
+### Getting the Robot Moving
 
-Our primary goal is to get the robot's wheels to turn. Using our current hardware, this involves making sure the CAN bus works, learning what controls we can send/receive from the Talon SRX motor controllers (using the tallon SDK, since they are not officially supported on linux), and implimenting what we learn into ROS. 
+Our primary goal is to get the robot's wheels to turn. Using our current hardware, this involves making sure the CAN bus works, learning what controls we can send/receive from the Talon SRX motor controllers (using the talon SDK, since they are not officially supported on Linux), and implementing what we learn into ROS. 
 
-The last time we attempted to get the robot moving we struggled to get the tallons to communicate with our pi, so our first goal is to recreate the control system we had previously. 
+The last time we attempted to get the robot moving we struggled to get the talons to communicate with our pi, so our first goal is to recreate the control system we had previously. 
 
 ### Current Hardware Setup and Potential Future Hardware
 
-Curretly, The robot consists of a Raspberry Pi 3B+, CANable USB-to-CAN adapter, and some FRC equipment (Tallon SRX Bag motor\[FRC BDC motors\] controllers, Power Distribuion Pannel). We are using a c/c++ SDK to communicate with the tallons over the CANable and controlling the robot using the dashboard and an xbox controller. 
+Currently, The robot consists of a Raspberry Pi 3B+, CANable USB-to-CAN adapter, and some FRC equipment (Talon SRX Bag motor\[FRC BDC motors\] controllers, Power Distribution Panel). We are using a c/c++ SDK to communicate with the talons over the CANable and controlling the robot using the dashboard and an xbox controller. 
 
-If we have difficulty with the tallons, we may have to find some other smart motor controller, or create our own. However, this may take much more effort and create the possibility of not being able to finish the robot. 
+If we have difficulty with the talons, we may have to find some other smart motor controller, or create our own. However, this may take much more effort and create the possibility of not being able to finish the robot. 
 
-In the future, assuming we both have a working robot + controll system and are have pleanty of extra time, we will probably be looking into replacing the tallons with a more closed-loop control design. This would give us the benifet of having percice control over the entire robot at the cost of man hours. 
+In the future, assuming we both have a working robot + control system and are have plenty of extra time, we will probably be looking into replacing the talons with a more closed-loop control design. This would give us the benefit of having precise control over the entire robot at the cost of man hours. 
 
 
 
