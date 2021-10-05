@@ -1,0 +1,264 @@
+<html>
+<head>
+<link href="../css/GitHub2.css" rel="stylesheet" type="text/css"/>
+<link href="https://latex.now.sh/style.css" rel="stylesheet" type="text/css"/>
+<link href="../css/lunarknights.css" rel="stylesheet" type="text/css"/>
+<link href="https://unpkg.com/prismjs@1.25.0/themes/prism.css" rel="stylesheet"/>
+<link href="https://unpkg.com/prismjs@1.25.0/plugins/line-numbers/prism-line-numbers.css" rel="stylesheet" type="text/css"/>
+<link href="https://unpkg.com/prismjs@1.25.0/plugins/toolbar/prism-toolbar.css" rel="stylesheet" type="text/css"/>
+<script src="https://unpkg.com/mermaid@8.12.1/dist/mermaid.min.js"></script>
+<script>
+			mermaid.initialize({ startOnLoad: true });
+			mermaid.parseError = console.log;
+		</script>
+<title>API Designing</title>
+</head>
+<body>
+<script src="https://unpkg.com/prismjs@v1.25.0/components/prism-core.min.js"></script>
+<script src="https://unpkg.com/prismjs@v1.25.0/plugins/autoloader/prism-autoloader.min.js"></script>
+<script src="https://unpkg.com/prismjs@1.25.0/plugins/line-numbers/prism-line-numbers.min.js"></script>
+<script src="https://unpkg.com/prismjs@1.25.0/plugins/toolbar/prism-toolbar.min.js"></script>
+<script src="https://unpkg.com/prismjs@1.25.0/plugins/copy-to-clipboard/prism-copy-to-clipboard.min.js"></script>
+<div style="text-align: center">
+<h1>
+<a class="lklink unstyled" href="../index.html">
+					Meeting Notes <br/>
+<span style="font-size: 50%">Lunar Knights Control Systems</span>
+</a>
+</h1>
+</div>
+<h1 style="text-align: left">
+<span id="page-title">API Designing</span>
+<span class="lkdate" id="page-date">10/03/2021</span>
+</h1>
+<h2 id="agenda">Agenda <a class="header-anchor" href="#agenda">#</a></h2>
+<ol>
+<li>Recap</li>
+<li>C in Python Demo</li>
+<li>Previous control systems work</li>
+<li>Design Discussions</li>
+<li>Preparing for Next Week</li>
+</ol>
+<h2 id="c-in-python-demo">C in Python Demo <a class="header-anchor" href="#c-in-python-demo">#</a></h2>
+<p>For low-level programming we will use C/C++; however, for higher tasks (such as the dashboard), we will use Python.</p>
+<h3 id="dependencies">Dependencies <a class="header-anchor" href="#dependencies">#</a></h3>
+<p>Some C compiler such as <code>gcc</code> or <code>clang</code>. Your system probably already has one installed, but if not look up C compiler install instructions for your machine.</p>
+<p>Python 3: <a href="https://www.python.org/downloads/">https://www.python.org/downloads/</a></p>
+<p>Install the <code>cffi</code> package for python: <code>python3 -m pip install cffi</code></p>
+<h3 id="sample-shared-c-library">Sample Shared C Library <a class="header-anchor" href="#sample-shared-c-library">#</a></h3>
+<p>We will use the foreign function interface (FFI) to call C functions in Python. Let's first create a C library.</p>
+<p>Consider a header file such as:</p>
+<pre><code class="line-numbers language-c">void hello(void);
+int adder(int x, int y);
+</code></pre>
+<p>And an implementation:</p>
+<pre><code class="line-numbers language-c">void hello(void) {
+	printf("Hello from C!\n");
+}
+
+int adder(int x, int y) {
+	return x + y;
+}
+</code></pre>
+<p>Compile the demo shared library:</p>
+<pre><code class="language-sh">gcc -shared -o libdemo.so -fPIC src/demo.c
+</code></pre>
+<h4><code>ctypes</code> module</h4>
+<p>Documentation: <a href="https://docs.python.org/3/library/ctypes.html">https://docs.python.org/3/library/ctypes.html</a></p>
+<pre><code class="line-numbers language-python">from ctypes import CDLL
+lib = CDLL('./libdemo.so')
+lib.hello()
+print('result', lib.adder(2, 3))
+</code></pre>
+<p><strong>Pros:</strong> included in the standard Python modules</p>
+<p><strong>Cons:</strong> requires casting Python to C types for many data types</p>
+<h4><code>cffi</code> module</h4>
+<p>Documentation: <a href="https://cffi.readthedocs.io/">https://cffi.readthedocs.io/</a></p>
+<pre><code class="line-numbers language-python">from cffi import FFI
+
+ffi = FFI()
+ffi.cdef('''
+void hello(void);
+int adder(int x, int y);
+''')
+
+lib = ffi.dlopen('./libdemo.so')
+
+lib.hello()
+
+print('result', lib.adder(2, 3))
+</code></pre>
+<p><strong>Pros:</strong> easier to deal with types</p>
+<p><strong>Cons:</strong> requires an external import</p>
+<h3 id="sample-c-extensions-module">Sample C Extensions module <a class="header-anchor" href="#sample-c-extensions-module">#</a></h3>
+<p>Documentation: <a href="https://docs.python.org/3/extending/extending.html">https://docs.python.org/3/extending/extending.html</a></p>
+<p>The source c file should look like this:</p>
+<pre><code class="line-numbers language-c">static PyObject *hello(PyObject *self, PyObject *args) {
+	printf("Hello from C!\n");
+	return Py_None;
+}
+
+static PyObject *adder(PyObject *self, PyObject *args) {
+	int x, y;
+	if (!PyArg_ParseTuple(args, "ii", &amp;x, &amp;y)) return NULL;
+
+	return PyLong_FromLong(x + y);
+}
+
+static PyMethodDef DemoMethod[] = {
+	{"hello", hello, METH_VARARGS, "hello"},
+	{"adder", adder, METH_VARARGS, "adder"},
+	{NULL, NULL, 0, NULL}
+};
+
+static struct PyModuleDef demomod = {
+	PyModuleDef_HEAD_INIT,
+	"demo",
+	NULL,
+	-1,
+	DemoMethod
+};
+
+PyMODINIT_FUNC PyInit_demo(void) {
+	return PyModule_Create(&amp;demomod);
+}
+</code></pre>
+<p>To build this module create a <code>setup.py</code> file:</p>
+<pre><code class="line-numbers language-python">from distutils.core import setup, Extension
+
+module = Extension('demo', sources=['src/demomod.c'])
+
+setup(name='Demo Module',
+    version='0.1',
+    description='Demo extension',
+	ext_modules=[module])
+</code></pre>
+<p>Compile the module with:</p>
+<pre><code class="language-sh">python3 setup.py build --build-lib=.
+</code></pre>
+<p>Now we can use the C extension in python:</p>
+<pre><code class="line-numbers language-python">import demo
+
+demo.hello()
+print('result', demo.adder(2, 3))
+</code></pre>
+<h3 id="run-the-demos">Run the demos <a class="header-anchor" href="#run-the-demos">#</a></h3>
+<pre><code class="language-sh">python3 ctypes_demo.py
+python3 cffi_demo.py
+python3 cext_demo.py
+</code></pre>
+<p>Each script should produce an output similar to:</p>
+<pre><code class="language-console">Hello from C!
+Python: 5
+</code></pre>
+<p>Run <code>python3 speed_demo.py</code> to see the speed of each method.</p>
+<p>Sample output:</p>
+<pre><code class="language-console">Loading ctypes.CDLL took 0.012s
+Loading cffi.FFI took 0.045s
+Loading c extension took 0.004s
+
+Running adder for 20,000,000 iterations...
+ctypes took 3.146s
+cffi took 2.720s
+cext took 1.384s
+</code></pre>
+<h2 id="previous-control-systems-work">Previous control systems work <a class="header-anchor" href="#previous-control-systems-work">#</a></h2>
+<p>You had to be there, but we demonstrated the previous robot dashboard after connecting to the raspberry pi. We were able to init the CAN bus and  get the currents from each TalonSRX.</p>
+<h2 id="design-discussion">Design Discussion <a class="header-anchor" href="#design-discussion">#</a></h2>
+<p>We will mostly be working on tasks in parallel. In order to do this effectively, we need to define the explicit API between each layer. Here is an example of what this API might look like between the C, Python, and Web layers. We need to make some design decisions in regard to what the outward facing API is for each layer before we start heavy implementation.</p>
+<pre><code class="line-numbers language-yaml">liblk: C library
+	hardware:
+		- Talon.cpp
+			- set_power(float) -&gt; void
+			- get_current(void) -&gt; float
+			- get_ticks(void) -&gt; float
+		- Stepper.cpp
+			- step(void) -&gt; void
+			- step_by(int) -&gt; void
+			- get_steps() -&gt; int
+		- IMU.cpp
+			- get_heading() -&gt; float
+			- get_yaw() -&gt; float
+			- get_pitch() -&gt; float
+	robot:
+		- Base.cpp
+			- turn(float) -&gt; void
+			- travel(float) -&gt; void
+		- Intake.cpp
+		- Depo.cpp
+		- Robot.cpp
+			- init(void) -&gt; void
+			- start_heartbeat() -&gt; void
+			- stop_all() -&gt; void
+	utils:
+		- Logger.cpp
+
+lkpy: Python C extension module
+	- lkpymodule.cpp
+		- create_robot(void) -&gt; Robot
+		- kill(void) -&gt; boolean
+		- get_status(void) -&gt; Status
+
+web api:
+	POST:
+		- /gamepad {input_id: value}
+		- /kill
+	GET:
+		- /dashboard
+		- /sensor?id=
+</code></pre>
+<h2 id="preparing-for-next-week">Preparing for Next Week <a class="header-anchor" href="#preparing-for-next-week">#</a></h2>
+<p>Besides thinking about some API design choices, here are some concepts you may want to look at in preparing for the implementation phase. Some of these resources will also help us make choices about the design.</p>
+<h3 id="cc-stuff">C/C++ Stuff <a class="header-anchor" href="#cc-stuff">#</a></h3>
+<ul>
+<li><a href="https://github.com/CrossTheRoadElec/Phoenix-Linux-SocketCAN-Example/blob/master/include/ctre/phoenix/motorcontrol/can/TalonSRX.h">TalonSRX Library</a></li>
+<li><a href="https://docs.python.org/3/extending/extending.html">Making Python extensions</a></li>
+<li>C Build Systems
+<ul>
+<li><a href="https://cmake.org/">https://cmake.org/</a></li>
+<li><a href="https://julienjorge.medium.com/an-overview-of-build-systems-mostly-for-c-projects-ac9931494444">A bunch of methods</a></li>
+</ul>
+</li>
+</ul>
+<p>Some design choices to be made here are:</p>
+<ul>
+<li>What build system should we use?</li>
+<li>How should we structure the library?</li>
+<li>Object oriented or functional?</li>
+</ul>
+<h3 id="python-stuff">Python Stuff <a class="header-anchor" href="#python-stuff">#</a></h3>
+<ul>
+<li>Running C in Python
+<ul>
+<li><a href="https://en.wikipedia.org/wiki/Foreign_function_interface">FFI Concept</a></li>
+<li><a href="https://docs.python.org/3/library/ctypes.html">ctypes</a></li>
+<li><a href="https://cffi.readthedocs.io/en/latest/">cffi</a></li>
+<li><a href="https://docs.python.org/3/extending/extending.html">C extensions</a></li>
+</ul>
+</li>
+<li><a href="https://mypy.readthedocs.io/en/stable/">Type checking with mypy</a></li>
+</ul>
+<p>Some design choices to be made here are:</p>
+<ul>
+<li>What logic should be in Python instead of C?</li>
+<li>How should we load C libraries into Python?</li>
+</ul>
+<h3 id="web-stuff">Web Stuff <a class="header-anchor" href="#web-stuff">#</a></h3>
+<ul>
+<li><a href="https://flask.palletsprojects.com/en/2.0.x/">Flask backend</a></li>
+<li><a href="https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API">Web sockets</a>
+<ul>
+<li><a href="https://flask-socketio.readthedocs.io/en/latest/">Flask sockets</a></li>
+<li><a href="https://socket.io/">Js sockets</a></li>
+</ul>
+</li>
+<li><a href="https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch">fetch</a></li>
+<li><a href="https://www.w3schools.com/tags/ref_httpmethods.asp">POST &amp; GET requests</a></li>
+</ul>
+<p>Some design choices to be made here are:</p>
+<ul>
+<li>What routes to have?</li>
+<li>What data should the sockets handle?</li>
+</ul>
+</body>
+</html>
