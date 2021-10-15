@@ -7,10 +7,7 @@ Date created: 10/02/2021
 '''
 
 from os import stat
-from sys import argv
 from time import sleep
-
-from compile import note
 
 def watch(file, callback, wait=.5):
     '''
@@ -30,9 +27,4 @@ def watch(file, callback, wait=.5):
             callback(file)
 
         sleep(wait)
-    
-if __name__ == '__main__':
-    if len(argv) == 1: print('Pass a file as an argument')
-    elif not argv[1].endswith('.md'): print('Must be a .md file')
-    else: watch(file=argv[1], callback=note)
 

@@ -6,9 +6,9 @@ Date created: 09/30/2021
 
 from typing import MutableMapping, Sequence
 
-from markdown_it.renderer import RendererHTML
-from markdown_it.utils import OptionsDict
-from markdown_it.token import Token
+from markdown_it.renderer import RendererHTML # type: ignore
+from markdown_it.utils import OptionsDict # type: ignore
+from markdown_it.token import Token # type: ignore
 
 # Custom Markdown renderer
 class LKRenderer(RendererHTML):
