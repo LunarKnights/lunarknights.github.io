@@ -1,0 +1,126 @@
+<html>
+<head>
+<link href="../css/GitHub2.css" rel="stylesheet" type="text/css"/>
+<link href="https://latex.now.sh/style.css" rel="stylesheet" type="text/css"/>
+<link href="../css/lunarknights.css" rel="stylesheet" type="text/css"/>
+<link href="https://unpkg.com/prismjs@1.25.0/themes/prism.css" rel="stylesheet"/>
+<link href="https://unpkg.com/prismjs@1.25.0/plugins/line-numbers/prism-line-numbers.css" rel="stylesheet" type="text/css"/>
+<link href="https://unpkg.com/prismjs@1.25.0/plugins/toolbar/prism-toolbar.css" rel="stylesheet" type="text/css"/>
+<script src="https://unpkg.com/mermaid@8.12.1/dist/mermaid.min.js"></script>
+<script>
+			mermaid.initialize({ startOnLoad: true });
+			mermaid.parseError = console.log;
+		</script>
+<title>Low Level Design</title>
+</head>
+<body>
+<script src="https://unpkg.com/prismjs@v1.25.0/components/prism-core.min.js"></script>
+<script src="https://unpkg.com/prismjs@v1.25.0/plugins/autoloader/prism-autoloader.min.js"></script>
+<script src="https://unpkg.com/prismjs@1.25.0/plugins/line-numbers/prism-line-numbers.min.js"></script>
+<script src="https://unpkg.com/prismjs@1.25.0/plugins/toolbar/prism-toolbar.min.js"></script>
+<script src="https://unpkg.com/prismjs@1.25.0/plugins/copy-to-clipboard/prism-copy-to-clipboard.min.js"></script>
+<div style="text-align: center">
+<h1>
+<a class="lklink unstyled" href="../index.html">
+					Meeting Notes <br/>
+<span style="font-size: 50%">Lunar Knights Control Systems</span>
+</a>
+</h1>
+</div>
+<h1 style="text-align: left">
+<span id="page-title">Low Level Design</span>
+<span class="lkdate" id="page-date">10/10/2021</span>
+</h1>
+<h2 id="agenda">Agenda <a class="header-anchor" href="#agenda">#</a></h2>
+<ol>
+<li>Recap</li>
+<li>Misc Topics</li>
+<li>C/C++ Lunar Knights Library Design</li>
+</ol>
+<h2 id="misc-topics">Misc Topics <a class="header-anchor" href="#misc-topics">#</a></h2>
+<p>These are some topics we discussed in relation to making design choices. Feel free to research any of them or ask me questions.</p>
+<ul>
+<li>Functional vs Object-Oriented Programming</li>
+<li>Public vs Private Members</li>
+<li>"There should be one - and preferably only one - obvious way to do it." From the <a href="https://www.python.org/dev/peps/pep-0020/">Zen of Python</a></li>
+</ul>
+<h2 id="cc-lunar-knights-library-design">C/C++ Lunar Knights Library Design <a class="header-anchor" href="#cc-lunar-knights-library-design">#</a></h2>
+<p>We started writing up a formalize design document for the entire Lunar Knights codebase. The design doc will be located <a href="/docs/design.html">here</a>.</p>
+<h3 id="hardware">Hardware <a class="header-anchor" href="#hardware">#</a></h3>
+<h4>DC Motors</h4>
+<p>5 bag motors controlled by the TalonSRXs. Four motors will be used on the base of motion subsystem. One motor will be used on the intake system.</p>
+<p>Each motor will be represented by a <code>Motor</code> class. This class will create a <code>TalonSRX</code> object and will have the following attributes:</p>
+<pre><code class="language-c">set_power(float power) -&gt; void
+get_ticks(void) -&gt; int
+get_current(void) -&gt; float
+
+reset_ticks(void) -&gt; void
+reverse(void) -&gt; bool
+</code></pre>
+<h4>Stepper Motor</h4>
+<p>2 stepper motors controlled by TBD. Two motors will be used on the intake system to raise and lower the bucket system.</p>
+<p>Each stepper will be represented by a <code>Stepper</code> class.</p>
+<pre><code class="language-c">private int steps
+
+step_by(int number) -&gt; void
+ - step_c
+ - step_cc
+get_steps(void) -&gt; int
+
+reset_steps(void) -&gt; void
+</code></pre>
+<h4>Encoders</h4>
+<p>2 encoders will be used on the intake lead screws.</p>
+<p>Each encoder is represented by an <code>Encoder</code> class.</p>
+<pre><code class="language-c">get_ticks(void) -&gt; void
+reset_ticks(void) -&gt; void
+</code></pre>
+<h4>IMU</h4>
+<p>1 IMU will be used to track the robots heading.</p>
+<pre><code class="language-c">get_heading(void) -&gt; float
+get_yaw(void) -&gt; float
+get_roll(void) -&gt; float
+
+reset(void) -&gt; void
+</code></pre>
+<h4>Camera Device</h4>
+<p>1 ZED Camera will be used. Due to GPU limitations with the ZED SDK and the raspberry pi, we will need to write our own Camera API using OpenCV. If we switch to the Jetson Nano, we will be able to use the existing ZED SDK.</p>
+<pre><code class="language-c">get_frame(void) -&gt; Image
+get_depth(void) -&gt; Image
+</code></pre>
+<h3 id="subsystems">Subsystems <a class="header-anchor" href="#subsystems">#</a></h3>
+<h4>Base of Motion</h4>
+<p>The base includes 4 dc motors and 1 imu.</p>
+<pre><code class="language-c">init(void) -&gt; bool
+
+// teleop controls
+set_left_power(float) -&gt; void
+set_right_power(float) -&gt; void
+
+move(int) -&gt; void
+turn(float) -&gt; void
+
+// we must have a thread to track pos
+get_position(void) -&gt; (float, float)
+</code></pre>
+<h4>Intake</h4>
+<p>The intake includes 2 steppers, 1 dc motor, and 2 encoders.</p>
+<pre><code class="language-c">init(void) -&gt; bool
+
+mine(void) -&gt; bool
+ - does everything below automatically
+
+dig(void) -&gt; bool
+lower(void) -&gt; bool
+raise(void) -&gt; bool
+
+stop(void) -&gt; bool
+</code></pre>
+<h4>Deposition</h4>
+<p>The deposition includes TBD.</p>
+<pre><code class="language-c">init(void) -&gt; bool
+
+dump(void) -&gt; bool
+</code></pre>
+</body>
+</html>

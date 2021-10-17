@@ -150,6 +150,10 @@ if __name__ == '__main__':
 			
 		entry = f'<div><h2><a class="lklink unstyled" href="{link}"><div>{title}<span class="lkdate">{date}</span></div></a></h2></div>'
 		main.body.div.insert(0, soup(entry))
+
+		with open('index.html', 'w') as f:
+			f.write(str(main))
+
 		print(f'Added {title} - {date}')
 	elif args.reset:	
 		if args.watch: warn('Argument `watch` is not compatible with `reset` and will be ignored.')
